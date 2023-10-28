@@ -1,5 +1,10 @@
-SELECT d.director, p.personname
-FROM directors as d
-INNER JOIN persons as p
-ON d.director = p.pid
-LIMIT 5;
+-- Select all crew appearances for a given director
+SELECT *
+FROM crew
+WHERE pid
+IN (
+  SELECT director
+  FROM directors
+)
+and crewtype = 'director'
+limit 10;
