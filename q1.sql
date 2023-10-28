@@ -21,7 +21,12 @@ director_names AS (
     FROM max_2002_movies
   )
 )
-
+-- SELECT m.pid, personname, productiontype, n2002, n
 SELECT m.pid, personname, n2002
-FROM (max_2002_movies as m INNER JOIN director_names as p ON p.pid = m.pid)
+FROM (
+  max_2002_movies AS m
+  INNER JOIN
+  director_names AS p
+  ON p.pid = m.pid
+  )
 WHERE n2002 = (SELECT MAX(n2002) FROM max_2002_movies);
