@@ -1,21 +1,3 @@
--- WITH directors_with_7_movies AS (
---   SELECT *
---   FROM (
---     select pid, count(pid) as n
---     FROM (
---       select pid, id
---       FROM persons AS p
---       JOIN directors AS d
---       ON p.pid = d.director
---     ) AS c
---     JOIN productions AS p
---     ON p.id = c.id
---     WHERE productiontype = 'movie'
---     GROUP BY pid
---   ) as d
---   WHERE n >= 7
--- ),
-
 WITH great_movies AS (
   SELECT id
   FROM (
@@ -43,7 +25,7 @@ movies_by_great_directors AS (
 ),
 
 great_directors_with_7_movie_credits AS (
-  SELECT director, COUNT(*) AS director_appearances
+  SELECT director
   FROM movies_by_great_directors
   GROUP BY director
   HAVING COUNT(*) >= 7
@@ -53,6 +35,19 @@ director_names AS (
   SELECT pid, personname as director
   FROM great_directors_with_7_movie_credits as gd
   JOIN persons as p on p.pid = gd.director
+),
+
+ngreat AS (
+  SELECT director, count(*) as ngreat
+  FROM (
+    SELECT gm.id, d.director
+    FROM great_movies as gm JOIN directors as d ON gm.id = d.id
+  ) as c
+  GROUP BY director
 )
 
-select * from director_names;
+-- Starting to build output query...
+select *
+FROM (
+  director_names as dn JOIN ngreat as ng ON dn.pid = ng.director
+);
