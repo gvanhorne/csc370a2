@@ -47,10 +47,12 @@ great_directors_with_7_movie_credits AS (
   FROM movies_by_great_directors
   GROUP BY director
   HAVING COUNT(*) >= 7
+),
+
+director_names AS (
+  SELECT pid, personname
+  FROM great_directors_with_7_movie_credits as gd
+  JOIN persons as p on p.pid = gd.director
 )
 
--- director_names AS (
-
--- )
-
-select director from great_directors_with_7_movie_credits
+select * from director_names;
