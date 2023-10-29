@@ -50,7 +50,7 @@ great_directors_with_7_movie_credits AS (
 ),
 
 director_names AS (
-  SELECT pid, personname
+  SELECT pid, personname as director
   FROM great_directors_with_7_movie_credits as gd
   JOIN persons as p on p.pid = gd.director
 )
