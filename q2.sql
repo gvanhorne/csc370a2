@@ -39,12 +39,23 @@ title AS (
   FROM (
     productions as p JOIN filtered_seasons as f ON p.id = f.episodeof
   )
+),
+
+all_episode_ids AS (
+  SELECT id
+  FROM
+    (
+      filtered_seasons as f JOIN episodes as e
+        ON f.episodeof = e.episodeof and (f.season = e.season or f.season is null and e.season is null)
+    )
 )
 
-SELECT DISTINCT t.title, f.season
-FROM
-  (
-    filtered_seasons AS f
-    JOIN title AS t ON f.episodeof = t.id
-  )
-ORDER BY f.season ASC;
+SELECT * FROM all_episode_ids limit 25;
+-- starting to build final relation...
+-- SELECT DISTINCT t.title, f.season
+-- FROM
+--   (
+--     filtered_seasons AS f
+--     JOIN title AS t ON f.episodeof = t.id
+--   )
+-- ORDER BY f.season ASC;
