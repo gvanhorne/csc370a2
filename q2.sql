@@ -32,6 +32,19 @@ filtered_seasons AS (
     episodes as e JOIN most_episodes as m ON e.episodeof = m.episodeof
   )
   GROUP BY m.episodeof, e.season
+),
+
+title AS (
+  select title, p.id
+  FROM (
+    productions as p JOIN filtered_seasons as f ON p.id = f.episodeof
+  )
 )
 
-select * from filtered_seasons;
+SELECT DISTINCT t.title, f.season
+FROM
+  (
+    filtered_seasons AS f
+    JOIN title AS t ON f.episodeof = t.id
+  )
+ORDER BY f.season ASC;
