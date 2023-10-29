@@ -70,13 +70,13 @@ ep_per_season AS (
   ORDER BY f.first_year ASC
 )
 
-select * from ep_per_season;
-
 -- starting to build final relation...
--- SELECT DISTINCT t.title, f.season
--- FROM
---   (
---     filtered_seasons AS f
---     JOIN title AS t ON f.episodeof = t.id
---   )
--- ORDER BY f.season ASC;
+SELECT DISTINCT t.title, f.season, y.first_year, nepisodes
+FROM
+  (
+    filtered_seasons AS f
+    JOIN title AS t ON f.episodeof = t.id
+    JOIN SeasonFirstYear as y ON y.season = f.season or (y.season is null and f.season is null)
+    JOIN ep_per_season as e ON e.season = f.season or (e.season is null and f.season is null)
+  )
+ORDER BY y.first_year ASC;
