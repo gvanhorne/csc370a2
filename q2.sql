@@ -42,15 +42,33 @@ title AS (
 ),
 
 all_episode_ids AS (
-  SELECT id
+  SELECT id, f.season
   FROM
     (
       filtered_seasons as f JOIN episodes as e
         ON f.episodeof = e.episodeof and (f.season = e.season or f.season is null and e.season is null)
     )
+),
+
+season_years AS (
+  SELECT p.id, p.year, e.season
+  FROM productions as p JOIN all_episode_ids as e ON p.id = e.id
+  ORDER BY p.year ASC
+),
+
+SeasonFirstYear AS (
+  SELECT season, MIN(year) AS first_year
+  FROM season_years
+  GROUP BY season
+  ORDER BY first_year ASC
 )
 
-SELECT * FROM all_episode_ids limit 25;
+select * from SeasonFirstYear;
+-- SELECT S.id, S.year, S.season,
+--        SUM(1) OVER (PARTITION BY S.season ORDER BY S.year) AS season_episode_count
+-- FROM season_years AS S
+-- JOIN SeasonFirstYear AS F ON S.season = F.season
+
 -- starting to build final relation...
 -- SELECT DISTINCT t.title, f.season
 -- FROM
