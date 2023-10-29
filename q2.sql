@@ -1,4 +1,4 @@
-with unique_seasons AS (
+with all_seasons AS (
   select episodeof, season
   FROM episodes
   GROUP BY episodeof, season
@@ -6,7 +6,7 @@ with unique_seasons AS (
 
 four_seasons AS (
   SELECT episodeof
-  FROM unique_seasons
+  FROM all_seasons
   GROUP BY episodeof
   HAVING COUNT(DISTINCT season) >= 4
 ),
@@ -24,6 +24,14 @@ most_episodes_desc AS (
 most_episodes AS (
   SELECT episodeof from most_episodes_desc
   WHERE n = (SELECT MAX(n) FROM most_episodes_desc)
+),
+
+filtered_seasons AS (
+  select m.episodeof, e.season
+  FROM (
+    episodes as e JOIN most_episodes as m ON e.episodeof = m.episodeof
+  )
+  GROUP BY m.episodeof, e.season
 )
 
-select * from most_episodes;
+select * from filtered_seasons;
