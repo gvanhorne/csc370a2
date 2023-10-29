@@ -80,10 +80,16 @@ episodes_with_ratings AS (
   SELECT season, count(*) as withratings
   FROM ratings as r JOIN all_episode_ids as i on r.id = i.id
   GROUP BY season
+),
+
+avg_rating AS (
+  SELECT season, AVG(averagerating) AS avgrating
+  FROM ratings as r JOIN all_episode_ids as i on r.id = i.id
+  GROUP BY season
 )
 
 -- starting to build final relation...
-SELECT DISTINCT t.title, f.season, y.first_year, nepisodes, withratings, sumvotes
+SELECT DISTINCT t.title, f.season, y.first_year, nepisodes, withratings, avgrating, sumvotes
 FROM
   (
     filtered_seasons AS f
@@ -92,5 +98,6 @@ FROM
     JOIN ep_per_season as e ON e.season = f.season or (e.season is null and f.season is null)
     LEFT JOIN sum_ratings as r ON r.season = f.season or (r.season is null and f.season is null)
     LEFT JOIN episodes_with_ratings as er ON er.season = f.season or (er.season is null and f.season is null)
+    LEFT JOIN avg_rating as ar ON ar.season = f.season or (ar.season is null and f.season is null)
   )
 ORDER BY y.first_year ASC;
