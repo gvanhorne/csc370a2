@@ -61,13 +61,16 @@ SeasonFirstYear AS (
   FROM season_years
   GROUP BY season
   ORDER BY first_year ASC
+),
+
+ep_per_season AS (
+  SELECT DISTINCT s.season, f.first_year, SUM(1) OVER (PARTITION BY s.season) AS nepisodes
+  FROM season_years AS s
+  JOIN SeasonFirstYear AS f ON s.season = f.season or (s.season is null and f.season is null)
+  ORDER BY f.first_year ASC
 )
 
-select * from SeasonFirstYear;
--- SELECT S.id, S.year, S.season,
---        SUM(1) OVER (PARTITION BY S.season ORDER BY S.year) AS season_episode_count
--- FROM season_years AS S
--- JOIN SeasonFirstYear AS F ON S.season = F.season
+select * from ep_per_season;
 
 -- starting to build final relation...
 -- SELECT DISTINCT t.title, f.season
