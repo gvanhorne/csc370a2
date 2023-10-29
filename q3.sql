@@ -24,16 +24,33 @@ WITH great_movies AS (
     WHERE productiontype = 'movie'
   ) as c
   WHERE c.averagerating >= 8.5 and c.numvotes >= 100000
+),
+
+great_directors AS (
+  SELECT DISTINCT d.director
+  FROM (
+    great_movies as gm JOIN directors as d on gm.id = d.id
+  )
+  GROUP BY d.director
+),
+
+movies_by_great_directors AS (
+  select p.id, gd.director
+  FROM (
+    great_directors as gd JOIN directors as d on gd.director = d.director
+    JOIN productions as p on d.id = p.id and productiontype = 'movie'
+  )
+),
+
+great_directors_with_7_movie_credits AS (
+  SELECT director, COUNT(*) AS director_appearances
+  FROM movies_by_great_directors
+  GROUP BY director
+  HAVING COUNT(*) >= 7
 )
 
--- movies_by_directors_with_7_movie_credits AS (
---   SELECT c.director
---   FROM (
---     SELECT gm.id, d.director FROM great_movies as gm JOIN directors as d on gm.id = d.id
---     GROUP BY gm.id, d.director
---   ) as c
---   GROUP BY c.director
---   HAVING COUNT(*) >= 7
+-- director_names AS (
+
 -- )
 
-select * from great_movies;
+select director from great_directors_with_7_movie_credits
