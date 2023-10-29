@@ -11,7 +11,7 @@ four_seasons AS (
   HAVING COUNT(DISTINCT season) >= 4
 ),
 
-most_episodes AS (
+most_episodes_desc AS (
   SELECT e.episodeof, count(e.episodeof) as n
   FROM
     (
@@ -19,6 +19,11 @@ most_episodes AS (
     )
   GROUP BY e.episodeof
   ORDER BY n DESC
+),
+
+most_episodes AS (
+  SELECT episodeof from most_episodes_desc
+  WHERE n = (SELECT MAX(n) FROM most_episodes_desc)
 )
 
 select * from most_episodes;
