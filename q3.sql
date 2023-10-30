@@ -94,7 +94,8 @@ SELECT
   nm.nother,
   (ngreat::decimal / (ngreat + nother)) AS prop,
   ag.avggreat,
-  ao.avgother
+  ao.avgother,
+  (avggreat - avgother) as diff
 FROM (
   director_names as dn JOIN ngreat as ng ON dn.pid = ng.director
   JOIN nother as nm ON nm.director = dn.pid
