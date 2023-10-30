@@ -71,6 +71,19 @@ avggreat AS (
   JOIN great_directors_with_7_movie_credits as gd on gd.director = d.director
   JOIN ratings as r ON gm.id = r.id
   GROUP BY gd.director
+),
+
+avgother AS (
+  SELECT d.director, AVG(r.averagerating) as avgother
+  FROM (
+    movies_by_great_directors_with_7_movie_credits as md
+    JOIN ratings as r ON md.id = r.id
+    JOIN directors as d
+    ON md.id = d.id
+    JOIN productions as p ON p.id = d.id
+  )
+  WHERE md.id NOT IN (SELECT id from great_movies)
+  GROUP BY d.director
 )
 
 -- Starting to build output query...
@@ -80,9 +93,11 @@ SELECT
   ng.ngreat,
   nm.nother,
   (ngreat::decimal / (ngreat + nother)) AS prop,
-  ag.avggreat
+  ag.avggreat,
+  ao.avgother
 FROM (
   director_names as dn JOIN ngreat as ng ON dn.pid = ng.director
   JOIN nother as nm ON nm.director = dn.pid
   JOIN avggreat as ag ON ag.director = dn.pid
+  JOIN avgother as ao ON ao.director = dn.pid
 );
