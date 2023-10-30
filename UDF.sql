@@ -33,11 +33,9 @@ nepisodes AS (
   SELECT episodeof, COUNT(*) as nepisodes
   FROM series_id as s
   GROUP BY episodeof
-),
+)
 
-
-
-select DISTINCT title, year, ns.nseasons, ne.nepisodes
+select DISTINCT title, year, ns.nseasons, ne.nepisodes, runtime
 FROM series_id as s JOIN nseasons as ns ON s.episodeof = ns.episodeof
 JOIN nepisodes as ne ON ne.episodeof = s.episodeof
 -- SELECT title, year from series_id;
