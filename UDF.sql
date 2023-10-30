@@ -19,7 +19,7 @@ WITH series_id AS (
   FROM productions as p
   JOIN episodes as e
   ON p.id = e.episodeof
-  WHERE p.title = 'Mission X'
+  WHERE p.title = 'Star Trek'
   AND productiontype = 'tvSeries'
 ),
 
@@ -33,9 +33,17 @@ nepisodes AS (
   SELECT episodeof, COUNT(*) as nepisodes
   FROM series_id as s
   GROUP BY episodeof
+),
+
+rating_info AS (
+  SELECT episodeof, averagerating as avgrating, numvotes as votes
+  FROM (
+    SELECT DISTINCT episodeof, numvotes, averagerating FROM series_id as s
+    JOIN ratings as r ON r.id = s.episodeof
+  ) as c
 )
 
-select DISTINCT title, year, ns.nseasons, ne.nepisodes, runtime
+select DISTINCT title, year, ns.nseasons, ne.nepisodes, runtime, avgrating, votes
 FROM series_id as s JOIN nseasons as ns ON s.episodeof = ns.episodeof
 JOIN nepisodes as ne ON ne.episodeof = s.episodeof
--- SELECT title, year from series_id;
+JOIN rating_info as ar ON s.episodeof = ar.episodeof;
