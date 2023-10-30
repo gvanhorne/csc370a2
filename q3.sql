@@ -101,4 +101,5 @@ FROM (
   JOIN nother as nm ON nm.director = dn.pid
   JOIN avggreat as ag ON ag.director = dn.pid
   JOIN avgother as ao ON ao.director = dn.pid
-);
+)
+ORDER BY avgother DESC, prop DESC, director ASC
