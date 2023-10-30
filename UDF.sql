@@ -8,6 +8,9 @@ CREATE TYPE series_detail AS (
   avgrating double precision,
   votes integer
 );
+-- TODO: Implement this report...
+-- CREATE OR REPLACE FUNCTION user014_episodes(title text)
+-- RETURNS
 
 CREATE OR REPLACE FUNCTION user014_series(title text)
 RETURNS series_detail AS $$
