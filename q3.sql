@@ -31,6 +31,25 @@ great_directors_with_7_movie_credits AS (
   HAVING COUNT(*) >= 7
 ),
 
+movies_by_great_directors_with_7_movie_credits AS (
+  SELECT id
+  FROM movies_by_great_directors AS md JOIN great_directors_with_7_movie_credits as d
+  ON md.director = d.director
+),
+
+nother AS (
+  SELECT director, count(*) as nother
+  FROM (
+    movies_by_great_directors_with_7_movie_credits AS md
+    JOIN ratings as r ON md.id = r.id
+    JOIN directors as d
+    ON md.id = d.id
+    JOIN productions as p ON p.id = d.id
+  )
+  WHERE md.id NOT IN (SELECT id from great_movies)
+  GROUP BY director
+),
+
 director_names AS (
   SELECT pid, personname as director
   FROM great_directors_with_7_movie_credits as gd
@@ -46,8 +65,13 @@ ngreat AS (
   GROUP BY director
 )
 
+-- proportion AS (
+--   SELECT * from ngreat as ng JOIN num_movies_per_great_director as nm ON ng.director = nm.director
+-- )
+
 -- Starting to build output query...
-select *
+select dn.pid, dn.director, ng.ngreat, nm.nother
 FROM (
   director_names as dn JOIN ngreat as ng ON dn.pid = ng.director
+  JOIN nother as nm ON nm.director = dn.pid
 );
