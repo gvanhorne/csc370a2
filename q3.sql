@@ -65,12 +65,8 @@ ngreat AS (
   GROUP BY director
 )
 
--- proportion AS (
---   SELECT * from ngreat as ng JOIN num_movies_per_great_director as nm ON ng.director = nm.director
--- )
-
 -- Starting to build output query...
-select dn.pid, dn.director, ng.ngreat, nm.nother
+select dn.pid, dn.director, ng.ngreat, nm.nother, (ngreat::decimal / (ngreat + nother)) AS prop
 FROM (
   director_names as dn JOIN ngreat as ng ON dn.pid = ng.director
   JOIN nother as nm ON nm.director = dn.pid
