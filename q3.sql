@@ -63,11 +63,26 @@ ngreat AS (
     FROM great_movies as gm JOIN directors as d ON gm.id = d.id
   ) as c
   GROUP BY director
+),
+
+avggreat AS (
+  select gd.director, AVG(r.averagerating) as avggreat
+  FROM great_movies as gm JOIN directors as d on d.id = gm.id
+  JOIN great_directors_with_7_movie_credits as gd on gd.director = d.director
+  JOIN ratings as r ON gm.id = r.id
+  GROUP BY gd.director
 )
 
 -- Starting to build output query...
-select dn.pid, dn.director, ng.ngreat, nm.nother, (ngreat::decimal / (ngreat + nother)) AS prop
+SELECT
+  dn.pid,
+  dn.director,
+  ng.ngreat,
+  nm.nother,
+  (ngreat::decimal / (ngreat + nother)) AS prop,
+  ag.avggreat
 FROM (
   director_names as dn JOIN ngreat as ng ON dn.pid = ng.director
   JOIN nother as nm ON nm.director = dn.pid
+  JOIN avggreat as ag ON ag.director = dn.pid
 );
