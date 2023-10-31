@@ -1,10 +1,44 @@
 import psycopg2
 import sys
 
+def print_series_info(data):
+    (series, year, num_seasons, num_episodes, runtime, rating, votes) = data[0]
+    html_output = f"<ul>"
+    html_output += f"<li>Series: {series}</li>"
+    html_output += f"<li>Year: {year}</li>"
+    html_output += f"<li>Number of Seasons: {num_seasons}</li>"
+    html_output += f"<li>Number of Episodes: {num_episodes}</li>"
+    html_output += f"<li>Runtime: {runtime}</li>"
+    html_output += f"<li>Rating: {rating}</li>"
+    html_output += f"<li>Votes: {votes}</li>"
+    html_output += f"</ul>"
+
+    print(html_output)
+
+def print_season_info(data):
+    headings = ['Season', 'Year', 'Episodes', 'Avg. Votes', 'Avg. Rating', 'Difference']
+
+    html_table = '<table border="1">\n'
+    html_table += '<tr>'
+    for heading in headings:
+        html_table += f'<th>{heading}</th>'
+    html_table += '</tr>\n'
+
+    for row in rows:
+        html_table += '<tr>'
+        for value in row:
+            html_table += f'<td>{value}</td>'
+        html_table += '</tr>\n'
+
+    html_table += '</table>'
+    print(html_table)
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 ./series.py <title of series>")
         sys.exit(1)
+    title = sys.argv[1]
+
     print("Enter the database username:", file=sys.stderr)
     db_user = input()
     print("Enter the database password:", file=sys.stderr)
@@ -15,63 +49,27 @@ if __name__ == "__main__":
       "user": db_user,
       "password": db_password,
     }
-    try:
-      title = sys.argv[1]
-      # Connect to the PostgreSQL database
-      conn = psycopg2.connect(**db_config)
 
-      # Create a cursor object
+    try:
+      conn = psycopg2.connect(**db_config)
       cursor = conn.cursor()
 
-      # Execute SQL queries here
       cursor.execute("SELECT * FROM user014_series(%s);", (title,))
 
-      # Fetch and print results
       rows = cursor.fetchall()
 
-      (series, year, num_seasons, num_episodes, runtime, rating, votes) = rows[0]
-      if series == None:
+      if rows[0][0] == None:
         print('Series not found or duplicate series found')
       else:
-
-        html_output = f"<ul>"
-        html_output += f"<li>Series: {series}</li>"
-        html_output += f"<li>Year: {year}</li>"
-        html_output += f"<li>Number of Seasons: {num_seasons}</li>"
-        html_output += f"<li>Number of Episodes: {num_episodes}</li>"
-        html_output += f"<li>Runtime: {runtime}</li>"
-        html_output += f"<li>Rating: {rating}</li>"
-        html_output += f"<li>Votes: {votes}</li>"
-        html_output += f"</ul>"
-
-        print(html_output)
-
+        ## Print series info in a list
+        print_series_info(rows)
         cursor.close()
         
         cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM user014_series(%s);", (title,))
+        cursor.execute("SELECT * FROM user014_episodes(%s);", (title,))
         rows = cursor.fetchall()
-        # Define the table headings
-        headings = ['Season', 'Year', 'Episodes', 'Avg. Votes', 'Avg. Rating', 'Difference']
 
-        # # Create the HTML table
-        html_table = '<table border="1">\n'
-        html_table += '<tr>'
-        for heading in headings:
-            html_table += f'<th>{heading}</th>'
-        html_table += '</tr>\n'
-
-        for row in rows:
-            html_table += '<tr>'
-            for value in row:
-                html_table += f'<td>{value}</td>'
-            html_table += '</tr>\n'
-
-        html_table += '</table>'
-
-        # Print the HTML table
-        print(html_table)
+        print_season_info(rows)
 
     except (Exception, psycopg2.Error) as error:
         print("Error connecting to PostgreSQL:", error)
@@ -79,7 +77,6 @@ if __name__ == "__main__":
 
     finally:
         if conn:
-            # Close the cursor and the database connection
             cursor.close()
             conn.close()
             sys.exit(0)
