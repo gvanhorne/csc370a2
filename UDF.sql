@@ -56,7 +56,7 @@ RETURNS SETOF seasons AS $$
 
   SELECT
     s.season::text,
-    s.first_year,
+    s.first_year as year,
     count(*) as episodes,
     round(avgvotes, 1)::double precision as avgvotes,
     ROUND(avgrating::numeric, 1)::double precision as avgrating,
@@ -106,5 +106,3 @@ RETURNS series AS $$
   JOIN nepisodes as ne ON ne.episodeof = s.episodeof
   JOIN rating_info as ar ON s.episodeof = ar.episodeof;
 $$ LANGUAGE SQL;
-
--- SELECT * FROM user014_series('Star Trek');
