@@ -17,7 +17,6 @@ if __name__ == "__main__":
     }
     try:
       title = sys.argv[1]
-      title = f"'{title}'" if not title.startswith("'") and not title.endswith("'") else title
       # Connect to the PostgreSQL database
       conn = psycopg2.connect(**db_config)
 
@@ -25,7 +24,7 @@ if __name__ == "__main__":
       cursor = conn.cursor()
 
       # Execute SQL queries here
-      cursor.execute(f"SELECT * FROM user014_series({title});")
+      cursor.execute("SELECT * FROM user014_series(%s);", (title,))
 
       # Fetch and print results
       rows = cursor.fetchall()
@@ -51,7 +50,7 @@ if __name__ == "__main__":
         
         cursor = conn.cursor()
 
-        cursor.execute(f"SELECT * FROM user014_episodes({title});")
+        cursor.execute("SELECT * FROM user014_series(%s);", (title,))
         rows = cursor.fetchall()
         # Define the table headings
         headings = ['Season', 'Year', 'Episodes', 'Avg. Votes', 'Avg. Rating', 'Difference']
